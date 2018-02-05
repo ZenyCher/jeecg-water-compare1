@@ -1,0 +1,1 @@
+select ${cgField} from ${tableName} where id='${id}'
