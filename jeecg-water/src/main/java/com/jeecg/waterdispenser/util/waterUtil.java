@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jeecgframework.core.util.oConvertUtils;
+import org.jeecgframework.web.cgform.util.TableJson;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jeecg.waterdispenser.entity.WIntegralEntity;
@@ -82,6 +83,15 @@ public class waterUtil {
 			resultMap.put("success", false);
 		}
 		return resultMap;
+	}
+	
+	public static Boolean verificationToken(String memberPhone,String token){
+		if( oConvertUtils.isNotEmpty(memberPhone) && oConvertUtils.isNotEmpty(token) ){
+			if( !SecurityUtil.saveVerificationToken(memberPhone,token) ){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	

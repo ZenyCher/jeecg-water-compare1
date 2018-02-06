@@ -476,15 +476,15 @@ public class RoleController extends BaseController {
 		comboTrees = comboTree(functionList, comboTreeModel,loginActionlist, true);
 		/**======================================================================*/
 		//该区域代码是线上测试屏蔽菜单使用，如本地启动可去掉该段,返回方法也应更改
-		List<ComboTree> comboTrees1 = new ArrayList<ComboTree>();
-		for(int i=0;i<comboTrees.size();i++) {
-			String str = comboTrees.get(i).getText();
-			if( str.equals("账号管理") || str.equals("安装售后工作台") || str.equals("售后管理") || str.equals("销售管理") || str.equals("统计分析") || str.equals("系统报表")) {
-				comboTrees1.add(comboTrees.get(i));
-			}
-		}
-		comboTrees.remove(comboTrees);
-		MutiLangUtil.setMutiComboTree(comboTrees1);
+//		List<ComboTree> comboTrees1 = new ArrayList<ComboTree>();
+//		for(int i=0;i<comboTrees.size();i++) {
+//			String str = comboTrees.get(i).getText();
+//			if( str.equals("账号管理") || str.equals("安装售后工作台") || str.equals("售后管理") || str.equals("销售管理") || str.equals("统计分析") || str.equals("系统报表")) {
+//				comboTrees1.add(comboTrees.get(i));
+//			}
+//		}
+//		comboTrees.remove(comboTrees);
+//		MutiLangUtil.setMutiComboTree(comboTrees1);
 //		/**======================================================================*/
 //		MutiLangUtil.setMutiComboTree(comboTrees);
 
@@ -495,7 +495,7 @@ public class RoleController extends BaseController {
 		loginActionlist = null;
 
 		//System.out.println(JSON.toJSONString(comboTrees,true));		
-		return comboTrees1;
+		return comboTrees;
 	}
 
 	private List<ComboTree> comboTree(List<TSFunction> all, ComboTreeModel comboTreeModel, List<TSFunction> in, boolean recursive) {

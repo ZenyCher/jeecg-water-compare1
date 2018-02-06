@@ -404,7 +404,6 @@ public class WUserMemberController extends BaseController {
 	 * @param request
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping(params = "assignErector")
 	public ModelAndView assignErector(HttpServletRequest request) {
 		WUserMemberEntity wUserMemberEntity = new WUserMemberEntity();
@@ -414,16 +413,6 @@ public class WUserMemberController extends BaseController {
 			if( wUserMemberEntity != null){
 				HttpSession session = ContextHolderUtils.getSession();
 				session.setAttribute("SELECT_USER_DEVICE_PHONE", wUserMemberEntity.getMemberPhone());
-//				List<WUserDeviceEntity> list = wUserDeviceService.findByProperty(WUserDeviceEntity.class, "memberPhone", wUserMemberEntity.getMemberPhone());
-//				List<WDeviceEntity> listDevice = new ArrayList<WDeviceEntity>();
-//				if ( list != null && list.size() > 0 ) {
-//					for (int i = 0; i < list.size(); i++) {
-//						WDeviceEntity wDeviceEntity = new WDeviceEntity();
-//						wDeviceEntity = wdeviceService.findUniqueByProperty(WDeviceEntity.class, "deviceId", list.get(i).getDeviceId());
-//						listDevice.add(wDeviceEntity);
-//					}
-//				}
-//				request.setAttribute("wdevicePage", listDevice);
 				request.setAttribute("wuserMemberPage", wUserMemberEntity);				
 			}
 		}
@@ -639,34 +628,20 @@ public class WUserMemberController extends BaseController {
 	@RequestMapping(params = "relationshipList")
 	@ResponseBody
 	public AjaxJson relationshipList(HttpServletRequest request,HttpServletResponse response) {
-		String message = null;
 		AjaxJson j = new AjaxJson();
-		message = "亲属关系保存成功";
+		String message = "亲属关系保存成功";
 		try {
-			String memberPhone = request.getParameter("memberId");
-//			String registerId = request.getParameter("registerId");
+			String memberId = request.getParameter("memberId");
+			String memberPhone = request.getParameter("memberPhone");
 			String registerName = request.getParameter("registerName");
 			String registerRelatives = request.getParameter("registerRelatives");
-//			WUserRegisterEntity wUserRegisterEntity = new WUserRegisterEntity();
-//			if( oConvertUtils.isNotEmpty(registerId) ){
-//				wUserRegisterEntity = wuserRegisterService.findUniqueByProperty(WUserRegisterEntity.class, "id", registerId);
-//			}
-//			if( wUserRegisterEntity != null ){
-//				WUserMemberEntity wUserMemberEntity = wUserDeviceService.findUniqueByProperty(WUserMemberEntity.class, "id", memberId);
-//				if( wUserMemberEntity != null ){
-//					wUserRegisterEntity.setRegisterRelation(wUserMemberEntity.getMemberName());
-//				}
-//				if(oConvertUtils.isNotEmpty(registerName) && oConvertUtils.isNotEmpty(registerRelatives)){
-//					wUserRegisterEntity.setRegisterRelatives(registerRelatives);
-//					wuserRegisterService.updateEntitie(wUserRegisterEntity);
-//				}
-//			}
-			WUserMemberEntity wUserMemberEntity = wUserMemberService.findUniqueByProperty(WUserMemberEntity.class, "memberPhone", memberPhone);
+			WUserMemberEntity wUserMemberEntity = wUserMemberService.findUniqueByProperty(WUserMemberEntity.class, "id", memberId);
 			if( wUserMemberEntity != null ){
 				WUserRegisterEntity wUserRegisterEntity = wuserRegisterService.findUniqueByProperty(WUserRegisterEntity.class, "registerPhone", registerName);
 				if( wUserRegisterEntity != null ){
 					wUserRegisterEntity.setRegisterRelation(memberPhone);
 					wUserRegisterEntity.setRegisterRelatives(registerRelatives);
+					j.setMsg(message);
 					wuserRegisterService.saveOrUpdate(wUserRegisterEntity);
 				}else {
 					j.setSuccess(false);
@@ -678,8 +653,8 @@ public class WUserMemberController extends BaseController {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			j.setSuccess(false);
 			message = "保存亲属关系失败，请稍后再试";
-			throw new BusinessException(e.getMessage());
 		}
 		return j;
 	}

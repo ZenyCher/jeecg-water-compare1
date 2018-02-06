@@ -45,9 +45,6 @@
 							</label>
 						</td>
 						<td class="value">
-<!-- 								<input id="registerId" name="registerId" type="hidden" value=""/> -->
-<!-- 								<input name="registerName" id="registerName" class="inputxt" value="" readonly="readonly" datatype="*" /> -->
-<%-- 								<t:choose hiddenName="registerId" hiddenid="id" url="werectorController.do?assign" name="registerList" icon="icon-search" title="选择安装工" textname="registerName" isclear="true" isInit="true"></t:choose> --%>
 							<input id="erectorCompany" name="erectorCompany" type="text" style="width: 150px" class="inputxt" ignore="ignore" datatype="*" value="${wMaintainPage.registerName }"/>
 					     	<input id="registerId" name="registerId" type="hidden" value="${wMaintainPage.registerId }"/>
 					     	<t:choose hiddenName="registerId" hiddenid="id" url="wmaintainController.do?assign" name="erectirList" icon="icon-search" title="选择安装公司" textname="erectorCompany" isclear="true" isInit="true"></t:choose>
@@ -66,20 +63,6 @@
 							<span class="Validform_checktip"></span>
 						</td>
 					</tr>
-<!-- 					<tr> -->
-<!-- 						<td align="right"> -->
-<!-- 							<label class="Validform_label"> -->
-<!-- 								设备: -->
-<!-- 							</label> -->
-<!-- 						</td> -->
-<!-- 						<td class="value"> -->
-<!-- 								<input id="deviceId" name="deviceId" type="hidden" value=""/> -->
-<!-- 								<input name="deviceName" id="deviceName" class="inputxt" value="" readonly="readonly" /> -->
-<%-- 								<t:choose hiddenName="deviceId" hiddenid="deviceId" url="wdeviceController.do?assign" name="deviceList" icon="icon-search" title="选择设备" textname="deviceName" isclear="true" isInit="true"></t:choose> --%>
-<!-- <!-- 							<select id="deviceName" name="deviceName" readonly="readonly"> --> -->
-<!-- 							</select> -->
-<!-- 						</td> -->
-<!-- 					</tr> -->
 					<tr>
 						<td align="right">
 							<label class="Validform_label">

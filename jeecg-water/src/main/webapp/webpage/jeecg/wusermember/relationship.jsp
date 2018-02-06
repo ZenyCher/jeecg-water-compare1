@@ -38,20 +38,9 @@
  </head>
  <body>
 		<t:formvalid formid="formobj" dialog="true" usePlugin="password" layout="table" action="wuserMemberController.do?relationshipList" >
-		<input id="memberId" name="memberId" type="hidden" value="${wuserMemberPage.memberPhone }"/>
+		<input id="memberId" name="memberId" type="hidden" value="${wuserMemberPage.id }"/>
+		<input id="memberPhone" name="memberPhone" type="hidden" value="${wuserMemberPage.memberPhone }"/>
 		<table style="width:700px;" cellpadding="0" cellspacing="1" class="formtable">
-<!-- 					<tr> -->
-<!-- 						<td align="right"> -->
-<!-- 							<label class="Validform_label"> -->
-<!-- 								注册用户: -->
-<!-- 							</label> -->
-<!-- 						</td> -->
-<!-- 						<td class="value"> -->
-<!-- 								<input id="registerId" name="registerId" type="hidden" value=""/> -->
-<!-- 								<input name="registerName" id="registerName" class="inputxt" value="" readonly="readonly" datatype="*" /> -->
-<%-- 								<t:choose hiddenName="registerId" hiddenid="id" url="wuserRegisterController.do?relationship" name="relationshipList" icon="icon-search" title="选择用户" textname="registerName" isclear="true" isInit="true"></t:choose> --%>
-<!-- 						</td> -->
-<!-- 					</tr> -->
 					<tr>
 						<td align="right">
 							<label class="Validform_label">

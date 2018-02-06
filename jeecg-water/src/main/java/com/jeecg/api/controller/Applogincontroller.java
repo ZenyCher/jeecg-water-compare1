@@ -199,7 +199,7 @@ public class Applogincontroller {
 					String str = phone + String.valueOf(mobile_code) + String.valueOf(dateL);
 //					将验证码放入session，验证之后清除
 					HttpSession session = ContextHolderUtils.getSession();
-					session.setAttribute(phone+"MOBILE_CODE", mobile_code);
+					session.setAttribute(phone+"MOBILE_CODE", String.valueOf(mobile_code));
 					session.setAttribute("3805_code", "3805");
 					if( "0".equals(oConvertUtils.getString(map.get("type"))) ){
 						j.setMsg("发送验证码成功！");
@@ -322,13 +322,15 @@ public class Applogincontroller {
 		HttpSession session = ContextHolderUtils.getSession();
 		System.out.println("code========" + session.getAttribute(phone+"MOBILE_CODE"));
 		System.out.println("code1=======" + session.getAttribute("3805_code"));
-		String code = oConvertUtils.getString(session.getAttribute(phone+"MOBILE_CODE"));
-		String code1 = oConvertUtils.getString(session.getAttribute("3805_code"));
+		String code = (String)session.getAttribute(phone+"MOBILE_CODE");
+		String code1 = (String)session.getAttribute("3805_code");
 		if( !code.equals(mobile_code) && !code1.equals(mobile_code)){
 			j.setMsg("验证码输入错误");
 			j.setSuccess(false);
 			return j;
 		}
+		System.out.println("code========获取验证码");
+		System.out.println("code1=======获取验证码");
 //		清除该用户的session验证码
 //		session.removeAttribute(oConvertUtils.getString(phone+"MOBILE_CODE"));
 //		session.removeAttribute(oConvertUtils.getString("3805_code"));
@@ -339,8 +341,8 @@ public class Applogincontroller {
 			return j;
 		}
 //		根据手机号码判定用户是否存在
-		Map<String, Object> list = wuserRegisterService.selectUserRegisterByRegisterPhone(phone);
-		if( list != null) {
+		List<Map<String, Object>> list = wuserRegisterService.selectUserRegisterByRegisterPhone(phone);
+		if( !list.isEmpty() ) {
 			j.setTableData(list);
 		}else{
 			j.setSuccess(true);

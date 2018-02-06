@@ -72,7 +72,6 @@ public class WechatServiceImpl extends CommonServiceImpl implements WechatServic
 	public boolean saveUserIntegral(String memberPhone,String packageMoney,String waterId) throws Exception{
 		logger.info("==========================================="
 				+ "========================================================memberPhone="+memberPhone+"packageMoney="+packageMoney+"waterId="+waterId);
-		packageMoney = "10";
 		BigDecimal bigDecimal = new BigDecimal(packageMoney);//充值金额
 		WUserMemberEntity wUserMember = wUserMemberServiceI.findUniqueByProperty(WUserMemberEntity.class, "deviceId", waterId);
 		Map<String, Object> map = new HashMap<String,Object>();

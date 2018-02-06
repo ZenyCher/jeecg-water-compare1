@@ -263,7 +263,7 @@ public class CgFormDataController {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException("水表操作失败，请稍后再试!");
+			j.setMsg("水表操作失败，请稍后再试!");
 		}
 		return j;
 	}
@@ -554,7 +554,7 @@ public class CgFormDataController {
 //		}
 		String phone = oConvertUtils.getString(map.get("member_phone"));
 		//根据登录的联系方式查找该注册用户的会员信息
-		Map<String, Object> userMap = wUserRegisterServiceI.selectUserRegisterByRegisterPhone(phone);
+		List<Map<String, Object>> userMap = wUserRegisterServiceI.selectUserRegisterByRegisterPhone(phone);
 		List<Map<String, Object>> deviceTypeList = new ArrayList<Map<String,Object>>();//返回用户设备类型表
 		List<Map<String, Object>> wWaterMeterEntities = new ArrayList<Map<String,Object>>();//返回水表
 		List<Map<String, Object>> maintainList = new ArrayList<Map<String,Object>>();//会员维护表信息
@@ -563,119 +563,114 @@ public class CgFormDataController {
 		List<Map<String, Object>> installMap = new ArrayList<Map<String,Object>>();
 		List<UserDeviceResult> userDeviceResults = new ArrayList<UserDeviceResult>();//result实体
 		List<Map<String, Object>> wPackageEntities = new ArrayList<Map<String,Object>>();//返回该用户套餐类型
-		if(userMap != null){
-			String userType = oConvertUtils.getString(userMap.get("register_type"));
-			//返回该用户的安装信息
-			if( "2".equals(userType) ){
-				installMap = wInstallServiceI.getInstallNameByRegisterId(oConvertUtils.getString(userMap.get("id")));
-				maintainList = wMaintainServiceI.getMaintainByRegisterId(oConvertUtils.getString(userMap.get("id")));
-				j.setMaintainTable(maintainList);
-				j.setInstallTable(installMap);
-				return j;
-			}
-			String memberPhone = oConvertUtils.getString(userMap.get("member_phone"));
-			//查找会员用户
-			List<Map<String, Object>> wUserMember = wUserMemberServiceI.getUserMenberByPhone(memberPhone);
-			List<Object> userMember = new ArrayList<Object>();
-			for (Map<String, Object> wUserMemberEntity : wUserMember) {
-				if( wUserMemberEntity != null ){
-					userMember.add(wUserMemberEntity);
-				}
-				List<String> list = new ArrayList<String>();
-				list.add(oConvertUtils.getString(wUserMemberEntity.get("member_package_id")));
-				list.add(oConvertUtils.getString(wUserMemberEntity.get("member_normal_package_id")));
-				for (int i = 0; i < list.size(); i++) {
-					Map<String, Object> wPackage = wPackageServiceI.getPackageById(oConvertUtils.getString(list.get(i)));
-					if( wPackage != null ){
-						wPackageEntities.add(wPackage);
+		if(!userMap.isEmpty()){
+			for (Map<String, Object> registerMap : userMap) {
+				String userType = oConvertUtils.getString(registerMap.get("register_type"));
+				String memberPhone = oConvertUtils.getString(registerMap.get("member_phone"));
+				//查找会员用户
+				List<Map<String, Object>> wUserMember = wUserMemberServiceI.getUserMenberByPhone(memberPhone);
+				List<Object> userMember = new ArrayList<Object>();
+				for (Map<String, Object> wUserMemberEntity : wUserMember) {
+					if( wUserMemberEntity != null ){
+						userMember.add(wUserMemberEntity);
 					}
-				}
-				//根据当前用户id查询当前用户的所有亲属
-				List<Map<String, Object>> wUserRegister = wuserRegisterService.getRegisterBymemberId(oConvertUtils.getString(wUserMemberEntity.get("id")));
-				if( !wUserRegister.isEmpty() ){
-					j.setUserRegister(wUserRegister);
-					for (Map<String, Object> wUserRegisterEntity : wUserRegister) {
-						//返回该亲属用户的设备中间表
-						Map<String, Object> wUserDeviceEntity = wUserDeviceServiceI.saveUserDeviceByMemberId(oConvertUtils.getString(wUserRegisterEntity.get("id")));
-						if( wUserDeviceEntity != null ){
-							UserDeviceResult userDeviceResult = new UserDeviceResult();
-							userDeviceResult.setMember_name(oConvertUtils.getString(userMap.get("member_name")));
-							userDeviceResult.setMember_phone(oConvertUtils.getString(userMap.get("member_phone")));
-							userDeviceResult.setOne_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("one_filter_name") == "0" ? 0 : wUserDeviceEntity.get("one_filter_name"))));
-							userDeviceResult.setTwo_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("two_filter_name") == "0" ? 0 : wUserDeviceEntity.get("two_filter_name"))));
-							userDeviceResult.setThree_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("three_filter_name") == "0" ? 0 : wUserDeviceEntity.get("three_filter_name"))));
-							userDeviceResult.setFour_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("four_filter_name") == "0" ? 0 : wUserDeviceEntity.get("four_filter_name"))));
-							userDeviceResult.setFive_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("five_filter_name") == "0" ? 0 : wUserDeviceEntity.get("five_filter_name"))));
-							userDeviceResult.setSix_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("six_filter_name") == "0" ? 0 : wUserDeviceEntity.get("six_filter_name"))));
-							//返回水表
-							Map<String, Object> wWater = wWaterMeterServiceI.getWaterMeterByWaterId(oConvertUtils.getString(wUserDeviceEntity.get("waterMeter_id")));
-							if( wWater != null ){
-								userDeviceResult.setWater_id(oConvertUtils.getString(wWater.get("water_id")));
-								userDeviceResult.setWater_current(Integer.valueOf(oConvertUtils.getString(wWater.get("water_current") == null ? 0 : wWater.get("water_current"))));
-								userDeviceResult.setWater_surplus(Integer.valueOf(oConvertUtils.getString(wWater.get("water_surplus"))));
-								userDeviceResult.setWater_value(Integer.valueOf(oConvertUtils.getString(wWater.get("water_value"))));
-								wWaterMeterEntities.add(wWater);
+					List<String> list = new ArrayList<String>();
+					list.add(oConvertUtils.getString(wUserMemberEntity.get("member_package_id")));
+					list.add(oConvertUtils.getString(wUserMemberEntity.get("member_normal_package_id")));
+					for (int i = 0; i < list.size(); i++) {
+						Map<String, Object> wPackage = wPackageServiceI.getPackageById(oConvertUtils.getString(list.get(i)));
+						if( wPackage != null ){
+							wPackageEntities.add(wPackage);
+						}
+					}
+					//根据当前用户id查询当前用户的所有亲属
+					List<Map<String, Object>> wUserRegister = wuserRegisterService.getRegisterBymemberId(oConvertUtils.getString(wUserMemberEntity.get("id")));
+					if( !wUserRegister.isEmpty() ){
+						j.setUserRegister(wUserRegister);
+						for (Map<String, Object> wUserRegisterEntity : wUserRegister) {
+							//返回该亲属用户的设备中间表
+							Map<String, Object> wUserDeviceEntity = wUserDeviceServiceI.saveUserDeviceByMemberId(oConvertUtils.getString(wUserRegisterEntity.get("id")));
+							if( wUserDeviceEntity != null ){
+								UserDeviceResult userDeviceResult = new UserDeviceResult();
+								userDeviceResult.setMember_name(oConvertUtils.getString(registerMap.get("member_name")));
+								userDeviceResult.setMember_phone(oConvertUtils.getString(registerMap.get("member_phone")));
+								userDeviceResult.setOne_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("one_filter_name") == "0" ? 0 : wUserDeviceEntity.get("one_filter_name"))));
+								userDeviceResult.setTwo_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("two_filter_name") == "0" ? 0 : wUserDeviceEntity.get("two_filter_name"))));
+								userDeviceResult.setThree_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("three_filter_name") == "0" ? 0 : wUserDeviceEntity.get("three_filter_name"))));
+								userDeviceResult.setFour_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("four_filter_name") == "0" ? 0 : wUserDeviceEntity.get("four_filter_name"))));
+								userDeviceResult.setFive_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("five_filter_name") == "0" ? 0 : wUserDeviceEntity.get("five_filter_name"))));
+								userDeviceResult.setSix_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("six_filter_name") == "0" ? 0 : wUserDeviceEntity.get("six_filter_name"))));
+								//返回水表
+								Map<String, Object> wWater = wWaterMeterServiceI.getWaterMeterByWaterId(oConvertUtils.getString(wUserDeviceEntity.get("waterMeter_id")));
+								if( wWater != null ){
+									userDeviceResult.setWater_id(oConvertUtils.getString(wWater.get("water_id")));
+									userDeviceResult.setWater_current(Integer.valueOf(oConvertUtils.getString(wWater.get("water_current") == null ? 0 : wWater.get("water_current"))));
+									userDeviceResult.setWater_surplus(Integer.valueOf(oConvertUtils.getString(wWater.get("water_surplus"))));
+									userDeviceResult.setWater_value(Integer.valueOf(oConvertUtils.getString(wWater.get("water_value"))));
+									wWaterMeterEntities.add(wWater);
+								}
+								wUserDeviceEntities.add(wUserDeviceEntity);
+								userDeviceResults.add(userDeviceResult);
 							}
-							wUserDeviceEntities.add(wUserDeviceEntity);
-							userDeviceResults.add(userDeviceResult);
 						}
 					}
-				}
-				//返回该用户设备中间表
-				Map<String, Object> wUserDeviceEntity = wUserDeviceServiceI.saveUserDeviceByMemberId(oConvertUtils.getString(wUserMemberEntity.get("id")));
-				if( wUserDeviceEntity != null ){
-					UserDeviceResult userDeviceResult = new UserDeviceResult();
-					userDeviceResult.setMember_name(oConvertUtils.getString(userMap.get("member_name")));
-					userDeviceResult.setMember_phone(oConvertUtils.getString(userMap.get("member_phone")));
-					userDeviceResult.setOne_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("one_filter_name") == "0" ? 0 : wUserDeviceEntity.get("one_filter_name"))));
-					userDeviceResult.setTwo_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("two_filter_name") == "0" ? 0 : wUserDeviceEntity.get("two_filter_name"))));
-					userDeviceResult.setThree_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("three_filter_name") == "0" ? 0 : wUserDeviceEntity.get("three_filter_name"))));
-					userDeviceResult.setFour_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("four_filter_name") == "0" ? 0 : wUserDeviceEntity.get("four_filter_name"))));
-					userDeviceResult.setFive_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("five_filter_name") == "0" ? 0 : wUserDeviceEntity.get("five_filter_name"))));
-					userDeviceResult.setSix_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("six_filter_name") == "0" ? 0 : wUserDeviceEntity.get("six_filter_name"))));
-					//返回水表
-					Map<String, Object> wWater = wWaterMeterServiceI.getWaterMeterByWaterId(oConvertUtils.getString(wUserDeviceEntity.get("waterMeter_id")));
-					if( wWater != null ){
-						userDeviceResult.setWater_id(oConvertUtils.getString(wWater.get("water_id")));
-						userDeviceResult.setWater_current(Integer.valueOf(oConvertUtils.getString(wWater.get("water_current") == null ? 0 : wWater.get("water_current"))));
-						userDeviceResult.setWater_surplus(Integer.valueOf(oConvertUtils.getString(wWater.get("water_surplus"))));
-						userDeviceResult.setWater_value(Integer.valueOf(oConvertUtils.getString(wWater.get("water_value"))));
-						wWaterMeterEntities.add(wWater);
-					}
-					//返回该用户的设备
-					Map<String, Object> wDeviceEntity = wDeviceServiceI.selectDeviceByDeviceId(oConvertUtils.getString(wUserDeviceEntity.get("device_id")));
-					if( wDeviceEntity != null ){
-						userDeviceResult.setDevice_id(oConvertUtils.getString(wDeviceEntity.get("device_id")));
-						userDeviceList.add(wDeviceEntity);
-					}
-					//返回该用户的安装信息
-					if( "2".equals(userType) ){
-						installMap = wInstallServiceI.getInstallNameByRegisterId(oConvertUtils.getString(userMap.get("id")));
-					}else {
-						installMap = wInstallServiceI.getInstallByMemberId(oConvertUtils.getString(wUserMemberEntity.get("id")));
-					}
-					if( installMap != null ){
-						for (Map<String, Object> map2 : installMap) {
-							userDeviceResult.setInstall_address(oConvertUtils.getString(map2.get("install_address")));
+					//返回该用户设备中间表
+					Map<String, Object> wUserDeviceEntity = wUserDeviceServiceI.saveUserDeviceByMemberId(oConvertUtils.getString(wUserMemberEntity.get("id")));
+					if( wUserDeviceEntity != null ){
+						UserDeviceResult userDeviceResult = new UserDeviceResult();
+						userDeviceResult.setMember_name(oConvertUtils.getString(registerMap.get("member_name")));
+						userDeviceResult.setMember_phone(oConvertUtils.getString(registerMap.get("member_phone")));
+						userDeviceResult.setOne_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("one_filter_name") == "0" ? 0 : wUserDeviceEntity.get("one_filter_name"))));
+						userDeviceResult.setTwo_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("two_filter_name") == "0" ? 0 : wUserDeviceEntity.get("two_filter_name"))));
+						userDeviceResult.setThree_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("three_filter_name") == "0" ? 0 : wUserDeviceEntity.get("three_filter_name"))));
+						userDeviceResult.setFour_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("four_filter_name") == "0" ? 0 : wUserDeviceEntity.get("four_filter_name"))));
+						userDeviceResult.setFive_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("five_filter_name") == "0" ? 0 : wUserDeviceEntity.get("five_filter_name"))));
+						userDeviceResult.setSix_filter_name(Integer.valueOf(oConvertUtils.getString(wUserDeviceEntity.get("six_filter_name") == "0" ? 0 : wUserDeviceEntity.get("six_filter_name"))));
+						//返回水表
+						Map<String, Object> wWater = wWaterMeterServiceI.getWaterMeterByWaterId(oConvertUtils.getString(wUserDeviceEntity.get("waterMeter_id")));
+						if( wWater != null ){
+							userDeviceResult.setWater_id(oConvertUtils.getString(wWater.get("water_id")));
+							userDeviceResult.setWater_current(Integer.valueOf(oConvertUtils.getString(wWater.get("water_current") == null ? 0 : wWater.get("water_current"))));
+							userDeviceResult.setWater_surplus(Integer.valueOf(oConvertUtils.getString(wWater.get("water_surplus"))));
+							userDeviceResult.setWater_value(Integer.valueOf(oConvertUtils.getString(wWater.get("water_value"))));
+							wWaterMeterEntities.add(wWater);
 						}
-						j.setInstallTable(installMap);
+						//返回该用户的设备
+						Map<String, Object> wDeviceEntity = wDeviceServiceI.selectDeviceByDeviceId(oConvertUtils.getString(wUserDeviceEntity.get("device_id")));
+						if( wDeviceEntity != null ){
+							userDeviceResult.setDevice_id(oConvertUtils.getString(wDeviceEntity.get("device_id")));
+							userDeviceList.add(wDeviceEntity);
+						}
+						//返回该用户的安装信息
+						if( "2".equals(userType) ){
+							installMap = wInstallServiceI.getInstallNameByRegisterId(oConvertUtils.getString(registerMap.get("id")));
+							maintainList = wMaintainServiceI.getMaintainByRegisterId(oConvertUtils.getString(registerMap.get("id")));
+						}else {
+							installMap = wInstallServiceI.getInstallByMemberId(oConvertUtils.getString(wUserMemberEntity.get("id")));
+							//返回该用户的维护信息
+							maintainList = wMaintainServiceI.getMaintainByDeviceAndMemberPhone(oConvertUtils.getString(wUserDeviceEntity.get("device_id")), memberPhone);
+						}
+						if( installMap != null ){
+							for (Map<String, Object> map2 : installMap) {
+								userDeviceResult.setInstall_address(oConvertUtils.getString(map2.get("install_address")));
+							}
+							j.setInstallTable(installMap);
+						}
+						if( !maintainList.isEmpty() ){
+							j.setMaintainTable(maintainList);//维护表
+						}
+						wUserDeviceEntities.add(wUserDeviceEntity);
+						userDeviceResults.add(userDeviceResult);
 					}
-					//返回该用户的维护信息
-					maintainList = wMaintainServiceI.getMaintainByDeviceAndMemberPhone(oConvertUtils.getString(wUserDeviceEntity.get("device_id")), memberPhone);
-					if( !maintainList.isEmpty() ){
-						j.setMaintainTable(maintainList);//维护表
-					}
-					wUserDeviceEntities.add(wUserDeviceEntity);
-					userDeviceResults.add(userDeviceResult);
 				}
+				j.setPackageTable(wPackageEntities);
+				j.setUserMember(userMember);
+				j.setUserDeviceTable(wUserDeviceEntities);//用户设备水表信息关联表
+				j.setDeviceTypeTable(deviceTypeList);//设备类型表
+				j.setWaterMeterTable(wWaterMeterEntities);//水表
+				j.setDeviceTable(userDeviceList);//用户设备关联表
+				j.setTableData(userDeviceResults);//返回实体信息
 			}
-			j.setPackageTable(wPackageEntities);
-			j.setUserMember(userMember);
-			j.setUserDeviceTable(wUserDeviceEntities);//用户设备水表信息关联表
-			j.setDeviceTypeTable(deviceTypeList);//设备类型表
-			j.setWaterMeterTable(wWaterMeterEntities);//水表
-			j.setDeviceTable(userDeviceList);//用户设备关联表
-			j.setTableData(userDeviceResults);//返回实体信息
 		}else{
 			j.setMsg("该用户不存在或没激活!");
 			j.setSuccess(false);
@@ -1358,6 +1353,7 @@ public class CgFormDataController {
 		if(!SecurityUtil.saveVerificationToken(oConvertUtils.getString(map.get("member_phone")),oConvertUtils.getString(map.get("token")))){
 			j.setTokenValid(false);
 			j.setSuccess(false);
+			j.setMsg("token验证错误!");
 			return j;
 		}
 		// 参数校验
@@ -1434,8 +1430,4 @@ public class CgFormDataController {
 			}
     	}
     }
-    
-    public static void main(String[] args) {
-		System.out.println(DataUtils.reverseStr("02207101"));
-	}
 }

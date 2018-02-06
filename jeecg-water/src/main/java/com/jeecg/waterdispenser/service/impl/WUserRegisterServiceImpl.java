@@ -46,10 +46,10 @@ public class WUserRegisterServiceImpl extends CommonServiceImpl implements WUser
  		this.doUpdateBus(entity);
  	}
  	
- 	public Map<String, Object> selectUserRegisterByRegisterPhone(String registerPhone) throws Exception {
+ 	public List<Map<String, Object>> selectUserRegisterByRegisterPhone(String registerPhone) throws Exception {
  		StringBuffer sb = new StringBuffer();
  		sb.append("select * from w_user_register where register_state = 1 and register_phone = ? ");
- 		Map<String, Object> map = commonDao.findOneForJdbc(sb.toString(), registerPhone);
+ 		List<Map<String, Object>> map = commonDao.findForJdbc(sb.toString(), registerPhone);
  		return map;
  	}
  	

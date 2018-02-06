@@ -19,7 +19,7 @@ public interface WUserRegisterServiceI extends CommonService{
  	 * @param registerPhone
  	 * @throws Exception
  	 */
- 	public Map<String, Object> selectUserRegisterByRegisterPhone(String registerPhone) throws Exception;
+ 	public List<Map<String, Object>> selectUserRegisterByRegisterPhone(String registerPhone) throws Exception;
  	
  	/**
 	 * 自定义按钮-[激活]业务处理

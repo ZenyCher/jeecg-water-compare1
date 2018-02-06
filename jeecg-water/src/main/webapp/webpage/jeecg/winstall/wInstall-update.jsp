@@ -231,8 +231,8 @@
 <%-- 						     	 <input id="installSource" name="installSource" type="text" style="width: 150px" class="inputxt" value='${wInstallPage.installSource}'> --%>
 <!-- 							<span class="Validform_checktip"></span> -->
 							<select id="installSource" name="installSource">
-							 	<option <c:if test="${wGiftExchangePage.giftexchangeState eq '0'}">selected</c:if> value="0">线下签约</option>
-								<option <c:if test="${wGiftExchangePage.giftexchangeState eq '1'}">selected</c:if> value="1">商城下单</option>
+							 	<option <c:if test="${wUserMemberPage.memberSource eq '0'}">selected</c:if> value="0">线下签约</option>
+								<option <c:if test="${wUserMemberPage.memberSource eq '1'}">selected</c:if> value="1">商城下单</option>
 <%-- 								<option <c:if test="${wGiftExchangePage.giftexchangeState eq '2'}">selected</c:if> value="2">申报</option> --%>
 <%-- 								<option <c:if test="${wGiftExchangePage.giftexchangeState eq '3'}">selected</c:if> value="3">已撤</option> --%>
 							</select> 
